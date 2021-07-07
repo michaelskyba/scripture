@@ -1,7 +1,9 @@
 #!/bin/sh
 
 # Usage sanitization
-[ -z "$SCRIPTURE_CONFIG" ] && echo 'warning: no $SCRIPTURE_CONFIG file set'
 [ -z "$1" ] && echo "usage: scripture <deck file>" && exit 1
+
+# TSV by default, otherwise use user's preference
+DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
 echo "scripture start"
