@@ -6,12 +6,21 @@
 # TSV by default, otherwise use user's preference
 DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
-while IFS="$DELIMITER" read -r front back repetition_number easiness_factor inter_repetition_interval last_review
+# Determine which cards need to be reviewed
+rm /tmp/scripture 2>/dev/null
+while read line
 do
-	echo "-------------"
-	echo "front: $front"
-	echo "back: $back"
-	echo "n: $repetition_number"
-	echo "EF: $easiness_factor"
-	echo "I: $inter_repetition_interval"
-done < "$1"
+	# Get epoch time of last review
+	output="$(echo "$line" | cut -d"$DELIMITER" -f 6)"
+	output="$(date +%s -d"$output")"
+
+	# See if time since last review outlasts inter_repetition_interval (I)
+	# 86400 --> num of seconds in 24 hours
+	I="$(echo "$line" | cut -d"$DELIMITER" -f 5)"
+	time_since="$(echo "$(date +%s) - $output" | bc -l)"
+
+	# Does time since last review fulfills I's requirement
+	[ "$time_since" -gt "$(echo "$I * 86400" | bc -l)" ] && echo "$line" >> /tmp/scripture
+done <"$1"
+echo "To review:"
+cat /tmp/scripture 2>/dev/null || echo "None"
