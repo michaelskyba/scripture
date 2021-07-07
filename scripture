@@ -6,4 +6,12 @@
 # TSV by default, otherwise use user's preference
 DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
-echo "scripture start"
+while IFS="$DELIMITER" read -r front back repetition_number easiness_factor inter_repetition_interval
+do
+	echo "-------------"
+	echo "front: $front"
+	echo "back: $back"
+	echo "n: $repetition_number"
+	echo "EF: $easiness_factor"
+	echo "I: $inter_repetition_interval"
+done < "$1"
