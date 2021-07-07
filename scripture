@@ -6,7 +6,7 @@
 # TSV by default, otherwise use user's preference
 DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
-while IFS="$DELIMITER" read -r front back repetition_number easiness_factor inter_repetition_interval
+while IFS="$DELIMITER" read -r front back repetition_number easiness_factor inter_repetition_interval last_review
 do
 	echo "-------------"
 	echo "front: $front"
