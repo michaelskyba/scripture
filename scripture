@@ -22,5 +22,21 @@ do
 	# Does time since last review fulfills I's requirement
 	[ "$time_since" -gt "$(echo "$I * 86400" | bc -l)" ] && echo "$line" >> /tmp/scripture
 done <"$1"
-echo "To review:"
-cat /tmp/scripture 2>/dev/null || echo "None"
+
+# Review each card
+while read line
+do
+	clear
+
+	# Get the Front and Back of your card
+	front="$(echo "$line" | cut -d"$DELIMITER" -f 1)"
+	back="$(echo "$line" | cut -d"$DELIMITER" -f 2)"
+
+	# Get grade from user
+	read -p "$front" </dev/tty
+	echo "$back"
+	echo
+	read -p "Enter your grade (0-5): " grade </dev/tty
+	
+	# SM-2 calculation, using $grade and friends
+done </tmp/scripture
