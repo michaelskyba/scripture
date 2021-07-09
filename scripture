@@ -7,21 +7,21 @@
 DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
 # Determine which cards need to be reviewed
-rm /tmp/scripture 2>/dev/null
+rm /tmp/scripture 2> /dev/null
 while read line
 do
 	# Get epoch time of last review
-	output="$(echo "$line" | cut -d"$DELIMITER" -f 6)"
-	output="$(date +%s -d"$output")"
+	output=$(echo "$line" | cut -d"$DELIMITER" -f 6)
+	output=$(date +%s -d"$output")
 
 	# See if time since last review outlasts inter_repetition_interval (I)
 	# 86400 --> num of seconds in 24 hours
-	I="$(echo "$line" | cut -d"$DELIMITER" -f 5)"
-	time_since="$(echo "$(date +%s) - $output" | bc -l)"
+	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
+	time_since=$(echo "$(date +%s) - $output" | bc -l)
 
 	# Does time since last review fulfills I's requirement
-	[ "$time_since" -gt "$(echo "$I * 86400" | bc -l)" ] && echo "$line" >> /tmp/scripture
-done <"$1"
+	[ $time_since -gt $(echo "$I * 86400" | bc -l) ] && echo "$line" >> /tmp/scripture
+done < "$1"
 
 # Review each card
 while read line
@@ -29,14 +29,14 @@ do
 	clear
 
 	# Get the Front and Back of your card
-	front="$(echo "$line" | cut -d"$DELIMITER" -f 1)"
-	back="$(echo "$line" | cut -d"$DELIMITER" -f 2)"
+	front=$(echo "$line" | cut -d"$DELIMITER" -f 1)
+	back=$(echo "$line" | cut -d"$DELIMITER" -f 2)
 
 	# Get grade from user
 	read -p "$front" </dev/tty
 	echo "$back"
 	echo
-	read -p "Enter your grade (0-5): " grade </dev/tty
+	read -p "Enter your grade (0-5): " grade < /dev/tty
 	
 	# SM-2 calculation, using $grade and friends
-done </tmp/scripture
+done < /tmp/scripture
