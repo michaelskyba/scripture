@@ -53,5 +53,14 @@ do
 	# I - interval
 	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
 
-	echo "input: $q $n $EF $I"
+    # Split depending on q >= 3 or not
+    # > 2 is the same as >= 3 because we only get integer grades
+	correct_response=0
+	[ $q -gt 2 ] && correct_response=1
+	case $correct_response in
+        1) echo "correct response!" ;;
+        0) echo "incorrect response!" ;;
+	esac
+
+	sleep 1
 done < /tmp/scripture
