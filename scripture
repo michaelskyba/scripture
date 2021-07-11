@@ -32,7 +32,7 @@ do
 	front=$(echo "$line" | cut -d"$DELIMITER" -f 1)
 	back=$(echo "$line" | cut -d"$DELIMITER" -f 2)
 
-	# Get grade from user
+	# Get grade (q) from user
 	read -p "$front" </dev/tty
 	echo "$back"
 	echo
@@ -40,9 +40,9 @@ do
     # Loop until user gives a valid answer
 	while :
 	do
-		read -p "Enter your grade (0-5): " grade < /dev/tty
-		echo $grade | grep "^[0-5]$" > /dev/null && break
+		read -p "Enter your grade (0-5): " q < /dev/tty
+		echo $q | grep "^[0-5]$" > /dev/null && break
 	done
 	
-	# SM-2 calculation, using $grade and friends
+	# SM-2 calculation
 done < /tmp/scripture
