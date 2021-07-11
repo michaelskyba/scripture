@@ -58,7 +58,20 @@ do
 	correct_response=0
 	[ $q -gt 2 ] && correct_response=1
 	case $correct_response in
-		1) echo "correct response!" ;;
+		1)
+			# Correct response
+			case $n in
+				0) I=1 ;;
+				1) I=6 ;;
+				*) I=$(echo "$I * $EF" | bc -l) ;;
+			esac
+
+			EF=$(echo "$EF + (0.1 − (5 − $q) * (0.08 + (5 − $q) * 0.02))" | bc -l)
+			(( $EF < 1.3 )) && EF=1.3
+
+			# Increment n
+			((n+=1))
+			;;
 		0)
 			# Incorrect response
 			n=0
