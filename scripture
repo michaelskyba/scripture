@@ -37,7 +37,7 @@ do
 	echo "$back"
 	echo
 
-    # Loop until user gives a valid answer
+	# Loop until user gives a valid answer
 	while :
 	do
 		read -p "Enter your grade (0-5): " q < /dev/tty
@@ -53,13 +53,13 @@ do
 	# I - interval
 	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
 
-    # Split depending on q >= 3 or not
-    # > 2 is the same as >= 3 because we only get integer grades
+	# Split depending on q >= 3 or not
+	# > 2 is the same as >= 3 because we only get integer grades
 	correct_response=0
 	[ $q -gt 2 ] && correct_response=1
 	case $correct_response in
-        1) echo "correct response!" ;;
-        0) echo "incorrect response!" ;;
+		1) echo "correct response!" ;;
+		0) echo "incorrect response!" ;;
 	esac
 
 	sleep 1
