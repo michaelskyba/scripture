@@ -54,9 +54,8 @@ do
 	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
 
 	# Split depending on q >= 3 or not
-	# > 2 is the same as >= 3 because we only get integer grades
 	correct_response=0
-	[ $q -gt 2 ] && correct_response=1
+	[ $q -ge 3 ] && correct_response=1
 	case $correct_response in
 		1)
 			# Correct response
@@ -71,11 +70,13 @@ do
 
 			# Increment n
 			((n+=1))
+
 			;;
 		0)
 			# Incorrect response
 			n=0
 			I=1
+
 			;;
 	esac
 
