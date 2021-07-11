@@ -59,7 +59,11 @@ do
 	[ $q -gt 2 ] && correct_response=1
 	case $correct_response in
 		1) echo "correct response!" ;;
-		0) echo "incorrect response!" ;;
+		0)
+			# Incorrect response
+			n=0
+			I=1
+			;;
 	esac
 
 	sleep 1
