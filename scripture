@@ -80,5 +80,14 @@ do
 			;;
 	esac
 
-	sleep 1
+	# Make the replacement
+	new_line="$front$DELIMITER$back$DELIMITER$n$DELIMITER$EFI$DELIMITER$I$DELIMITER$(date -I)"
+	echo "new line: $new_line"
+	sed_expression="s/$line/$new_line"
+	echo "sed expression: $sed_expression"
+	sed -i "$sed_expression" "$1"
+	sed -i "$sed_expression" /tmp/scripture
+	echo "done replacement"
+
+	read
 done < /tmp/scripture
