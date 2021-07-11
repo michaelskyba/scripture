@@ -45,4 +45,13 @@ do
 	done
 	
 	# SM-2 calculation
+
+	# n - repetition number
+	n=$(echo "$line" | cut -d"$DELIMITER" -f 3)
+	# EF - easiness factor
+	EF=$(echo "$line" | cut -d"$DELIMITER" -f 4)
+	# I - interval
+	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
+
+	echo "input: $q $n $EF $I"
 done < /tmp/scripture
