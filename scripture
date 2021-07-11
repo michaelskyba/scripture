@@ -36,7 +36,13 @@ do
 	read -p "$front" </dev/tty
 	echo "$back"
 	echo
-	read -p "Enter your grade (0-5): " grade < /dev/tty
+
+    # Loop until user gives a valid answer
+	while :
+	do
+		read -p "Enter your grade (0-5): " grade < /dev/tty
+		echo $grade | grep "^[0-5]$" > /dev/null && break
+	done
 	
 	# SM-2 calculation, using $grade and friends
 done < /tmp/scripture
