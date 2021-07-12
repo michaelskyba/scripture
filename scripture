@@ -115,7 +115,11 @@ update_deck () {
 	sed -i "s/^$old_line_escaped\$/$new_line_escaped/" "$3"
 }
 
-# Main loop
+# Exit if no cards to review
+cat /tmp/scripture &> /dev/null || none=1
+[ "$none" ] && echo "No cards to review." && exit
+
+# Otherwise, start main loop
 while :
 do
 	while read -r line
