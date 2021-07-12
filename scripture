@@ -89,11 +89,14 @@ do
 	echo "$line" >> log
 	echo "new:" >> log
 	echo "$new_line_raw" >> log
-	
-	new_line_escaped="$(echo "$new_line_raw" | sed -e 's/[]\/()$*.^|[]/\\&/g')"
+
+	# Both lines have to be escaped
+	new_line_escaped="$(echo "$new_line_raw" | sed -e 's/[]$*.^|[]/\\&/g')"
 	echo "$new_line_escaped" >> log
 
-	old_line_escaped="$(echo "$line" | sed -e 's/[]\/()$*.^|[]/\\&/g')"
+	# 's/[]\/()$*.^|[]/\\&/g' is wrong! Do NOT escape () anywhere!
+
+	old_line_escaped="$(echo "$line" | sed -e 's/[]$*.^|[]/\\&/g')"
 	echo "$old_line_escaped" >> log
 	echo "--------------------" >> log
 
