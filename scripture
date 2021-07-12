@@ -24,12 +24,10 @@ do
 	[ "$time_since" -gt "$(echo "$I * 86400" | bc -l)" ] && echo "$line" >> /tmp/scripture
 done < "$1"
 
-# Delegate reviewing
+# Delegate reviewing (getting the grade)
 review_card () {
 	# input: $1 - card to review
-	# output: new card
-
-	clear
+	# output: grade (via "return", so you use $?)
 
 	# Get the Front and Back of your card
 	front=$(echo "$1" | cut -d"$DELIMITER" -f 1)
@@ -46,8 +44,22 @@ review_card () {
 		read -rp "Enter your grade (0-5): " q < /dev/tty
 		echo "$q" | grep "^[0-5]$" > /dev/null && break
 	done
-	
-	# SM-2 calculation
+
+	# Function output
+	return "$q"
+}
+
+# Delegate SM-2 calculation
+compute_sm2 () {
+	# input: $1 - card, $2 - grade
+	# output: new card
+
+	# Get the Front and Back of your card
+	front=$(echo "$1" | cut -d"$DELIMITER" -f 1)
+	back=$(echo "$1" | cut -d"$DELIMITER" -f 2)
+
+	# Grade alias as per wikipedia
+	q="$2"
 
 	# n - repetition number
 	n=$(echo "$1" | cut -d"$DELIMITER" -f 3)
@@ -105,8 +117,14 @@ update_deck () {
 # Review each card
 while read -r line
 do
+	clear
+
 	# Review the card
-	new_line_raw=$(review_card "$line")
+	review_card "$line"
+	grade="$?"
+
+	# Calculate the new variables, ending up with an update line
+	new_line_raw=$(compute_sm2 "$line" "$grade")
 
 	# Update the deck file
 	update_deck "$line" "$new_line_raw" "$1"
@@ -115,11 +133,13 @@ do
 	# So, we need to create a list of these re-review cards
 
 	# If the grade is less than four, add the card to the list
-	[ "$q" -lt 4 ] && echo $new_line_raw >> /tmp/scripture_lt4
+	[ "$grade" -lt 4 ] && echo "$new_line_raw" >> /tmp/scripture_lt4
+
+	echo "done"
 
 done < /tmp/scripture
 
 # Start reviewing lt4 cards
-mv /tmp/scripture_l4 /tmp/scripture
+mv /tmp/scripture_lt4 /tmp/scripture
 
 # (review)
