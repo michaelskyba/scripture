@@ -81,25 +81,16 @@ do
 			;;
 	esac
 
-	# Make the replacement
+	# Create new line
 	new_line_raw="$front$DELIMITER$back$DELIMITER$n$DELIMITER$EF$DELIMITER$I$DELIMITER$(date -I)"
 
-	echo "--------------------" >> log
-	echo "old:" >> log
-	echo "$line" >> log
-	echo "new:" >> log
-	echo "$new_line_raw" >> log
-
 	# Both lines have to be escaped
-	new_line_escaped="$(echo "$new_line_raw" | sed -e 's/[]$*.^|[]/\\&/g')"
-	echo "$new_line_escaped" >> log
-
 	# 's/[]\/()$*.^|[]/\\&/g' is wrong! Do NOT escape () anywhere!
 
+	# Escape lines
+	new_line_escaped="$(echo "$new_line_raw" | sed -e 's/[]$*.^|[]/\\&/g')"
 	old_line_escaped="$(echo "$line" | sed -e 's/[]$*.^|[]/\\&/g')"
-	echo "$old_line_escaped" >> log
-	echo "--------------------" >> log
 
+	# Make the replacement
 	sed -i "s/^$old_line_escaped\$/$new_line_escaped/" "$1"
-	# sed -i "s/^$old_line_escaped\$/$new_line_escaped/" /tmp/scripture
 done < /tmp/scripture
