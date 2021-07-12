@@ -21,7 +21,8 @@ do
 	time_since=$(echo "$(date +%s) - $output" | bc -l)
 
 	# Does time since last review fulfills I's requirement
-	[ "$time_since" -gt "$(echo "$I * 86400" | bc -l)" ] && echo "$line" >> /tmp/scripture
+	I_thres=$(echo "$I * 86400" | bc -l)
+	[ "$(echo "$time_since > $I_thres" | bc -l)" = "1" ] && echo "$line" >> /tmp/scripture
 done < "$1"
 
 # Delegate reviewing (getting the grade)
