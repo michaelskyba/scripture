@@ -8,6 +8,7 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
 # Determine which cards need to be reviewed
 rm /tmp/scripture 2> /dev/null
+rm /tmp/scripture_lt4 2> /dev/null
 while read -r line
 do
 	# Get epoch time of last review
@@ -93,4 +94,15 @@ do
 
 	# Make the replacement
 	sed -i "s/^$old_line_escaped\$/$new_line_escaped/" "$1"
+
+	# SM-2 asks the user to "re-review any cards they marked with a grade less than 4 repeatedly until they give a grade ≥ 4"
+	# So, we need to create a list of these re-review cards
+
+	# If the grade is less than four, add the card to the list
+	[ "$q" -lt 4 ] && echo $new_line_raw >> /tmp/scripture_lt4
 done < /tmp/scripture
+
+# Start reviewing lt4 cards
+mv /tmp/scripture_l4 /tmp/scripture
+
+# (review)
