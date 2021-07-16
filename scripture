@@ -13,6 +13,44 @@ cat "$1" &> /dev/null || no_file=1
 [ "$no_file" ] && echo "No such deck file: $1" && exit 1
 
 # Deck file with missing fields
+i=1
+while read -r line
+do
+	# Check how many instances of $DELIMITER are in the line
+	splits=$(echo "$line" | sed "s/[^$DELIMITER]//g" | awk '{ print length }')
+
+	# Decide what we will do with this number, if there is something to do
+	type="invalid"
+	[ "$splits" = 5 ] && continue
+	[ "$splits" = 1 ] && type="new_card"
+
+	# Commit
+	case "$type" in
+		"invalid")
+			echo "Line $i is invalid."
+			echo "Provide exactly two columns (front and back) for new cards that you make."
+			echo "See the README for more information."
+
+			exit 1
+
+			;;
+
+		"new_card")
+			# arbitrary date that has to be in the past
+			date="2021-04-01"
+
+			default_line=$(echo "$line\$DELIMITER0\$DELIMITER2.5\$DELIMITER0\$DELIMITER$date" | sed "s/\$DELIMITER/$DELIMITER/g")
+			echo $default_line
+
+			# the update_deck function needs to have been declared at this point
+			# update_deck "$line" "$default_line" "$1"
+
+			;;
+	esac
+
+	i=$(echo "$i + 1" | bc)
+done < "$1"
+exit
 
 # Delete temp files
 rm /tmp/scripture 2> /dev/null
