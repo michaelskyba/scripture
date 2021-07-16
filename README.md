@@ -8,6 +8,8 @@
 ```
 Ensure that /usr/local/bin is in your $PATH.
 
+``scripture`` depends on bash and your coreutils.
+
 ## Usage
 Start a review session: ``scripture <deck file>``
 
