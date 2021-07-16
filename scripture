@@ -1,84 +1,6 @@
 #!/usr/bin/bash
 
-# TSV by default, otherwise use user's preference
-DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
-
-# Usage sanitization
-
-# No deck file provided
-[ -z "$1" ] && echo "Usage: scripture <deck file>" && exit 1
-
-# Non-existent deck file
-cat "$1" &> /dev/null || no_file=1
-[ "$no_file" ] && echo "No such deck file: $1" && exit 1
-
-# Deck file with missing fields
-i=1
-while read -r line
-do
-	# Check how many instances of $DELIMITER are in the line
-	splits=$(echo "$line" | sed "s/[^$DELIMITER]//g" | awk '{ print length }')
-
-	# Decide what we will do with this number, if there is something to do
-	type="invalid"
-	[ "$splits" = 5 ] && continue
-	[ "$splits" = 1 ] && type="new_card"
-
-	# Commit
-	case "$type" in
-		"invalid")
-			echo "Line $i is invalid."
-			echo "Provide exactly two columns (front and back) for new cards that you make."
-			echo "See the README for more information."
-
-			exit 1
-
-			;;
-
-		"new_card")
-			# arbitrary date that has to be in the past
-			date="2021-04-01"
-
-			default_line=$(echo "$line\$DELIMITER0\$DELIMITER2.5\$DELIMITER0\$DELIMITER$date" | sed "s/\$DELIMITER/$DELIMITER/g")
-			echo $default_line
-
-			# the update_deck function needs to have been declared at this point
-			# update_deck "$line" "$default_line" "$1"
-
-			;;
-	esac
-
-	i=$(echo "$i + 1" | bc)
-done < "$1"
-exit
-
-# Delete temp files
-rm /tmp/scripture 2> /dev/null
-rm /tmp/scripture_lt4 2> /dev/null
-rm /tmp/scripture_upcoming 2> /dev/null
-
-# Determine which cards need to be reviewed
-while read -r line
-do
-	# Get epoch time of last review
-	output=$(echo "$line" | cut -d"$DELIMITER" -f 6)
-	output=$(date +%s -d"$output")
-
-	# See if time since last review outlasts inter_repetition_interval (I)
-	# 86400 --> num of seconds in 24 hours
-	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
-	time_since=$(echo "$(date +%s) - $output" | bc -l)
-
-	# Does time since last review fulfills I's requirement
-	I_thres=$(echo "$I * 86400" | bc -l)
-	[ "$(echo "$time_since > $I_thres" | bc -l)" = "1" ] && echo "$line" >> /tmp/scripture
-
-	# Add review date to /tmp/scripture_upcoming, for telling the user
-	# the next time to review, if they have no reviews currently
-	next_date=$(echo "$output + $I_thres" | bc -l)
-	next_date=${next_date%%.*}
-	echo "$next_date" >> /tmp/scripture_upcoming
-done < "$1"
+# Function definitions first
 
 # Delegate reviewing (getting the grade)
 review_card () {
@@ -169,6 +91,85 @@ update_deck () {
 	# Make the replacement
 	sed -i "s/^$old_line_escaped\$/$new_line_escaped/" "$3"
 }
+
+# Start of main program
+
+# TSV by default, otherwise use user's preference
+DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
+
+# Usage sanitization
+
+# No deck file provided
+[ -z "$1" ] && echo "Usage: scripture <deck file>" && exit 1
+
+# Non-existent deck file
+cat "$1" &> /dev/null || no_file=1
+[ "$no_file" ] && echo "No such deck file: $1" && exit 1
+
+# Deck file with missing fields
+i=1
+while read -r line
+do
+	# Check how many instances of $DELIMITER are in the line
+	splits=$(echo "$line" | sed "s/[^$DELIMITER]//g" | awk '{ print length }')
+
+	# Decide what we will do with this number, if there is something to do
+	type="invalid"
+	[ "$splits" = 5 ] && continue
+	[ "$splits" = 1 ] && type="new_card"
+
+	# Commit
+	case "$type" in
+		"invalid")
+			echo "Line $i is invalid."
+			echo "Provide exactly two columns (front and back) for new cards that you make."
+			echo "See the README for more information."
+
+			exit 1
+
+			;;
+
+		"new_card")
+			# arbitrary date that has to be in the past
+			date="2021-04-01"
+
+			default_line=$(echo "$line\$DELIMITER0\$DELIMITER2.5\$DELIMITER0\$DELIMITER$date" | sed "s/\$DELIMITER/$DELIMITER/g")
+
+			update_deck "$line" "$default_line" "$1"
+
+			;;
+	esac
+
+	i=$(echo "$i + 1" | bc)
+done < "$1"
+
+# Delete temp files
+rm /tmp/scripture 2> /dev/null
+rm /tmp/scripture_lt4 2> /dev/null
+rm /tmp/scripture_upcoming 2> /dev/null
+
+# Determine which cards need to be reviewed
+while read -r line
+do
+	# Get epoch time of last review
+	output=$(echo "$line" | cut -d"$DELIMITER" -f 6)
+	output=$(date +%s -d"$output")
+
+	# See if time since last review outlasts inter_repetition_interval (I)
+	# 86400 --> num of seconds in 24 hours
+	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
+	time_since=$(echo "$(date +%s) - $output" | bc -l)
+
+	# Does time since last review fulfills I's requirement
+	I_thres=$(echo "$I * 86400" | bc -l)
+	[ "$(echo "$time_since > $I_thres" | bc -l)" = "1" ] && echo "$line" >> /tmp/scripture
+
+	# Add review date to /tmp/scripture_upcoming, for telling the user
+	# the next time to review, if they have no reviews currently
+	next_date=$(echo "$output + $I_thres" | bc -l)
+	next_date=${next_date%%.*}
+	echo "$next_date" >> /tmp/scripture_upcoming
+done < "$1"
 
 # Exit if no cards to review
 cat /tmp/scripture &> /dev/null || none=1
