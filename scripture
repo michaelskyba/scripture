@@ -13,9 +13,11 @@ review_card () {
 
 	# Get grade (q) from user
 	echo "$front"
+	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "front-show" "$front" "$back" &
 	read < /dev/tty
 	echo "$back"
 	echo
+	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "back-show" "$front" "$back" &
 
 	# Loop until user gives a valid answer
 	while :
@@ -24,6 +26,7 @@ review_card () {
 		read -r q < /dev/tty
 		echo "$q" | grep "^[0-5]$" > /dev/null && break
 	done
+	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "card-complete" "$front" "$back" &
 
 	# Function output
 	return "$q"
