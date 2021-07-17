@@ -3,10 +3,10 @@
 
 ## Installation
 ```sh
-# curl -o /usr/local/bin/scripture https://raw.githubusercontent.com/michaelskyba/scripture/master/scripture
-# chmod +x /usr/local/bin/scripture
+curl -o /usr/local/bin/scripture https://raw.githubusercontent.com/michaelskyba/scripture/master/scripture
+chmod +x /usr/local/bin/scripture
 ```
-Ensure that /usr/local/bin is in your $PATH.
+If /usr/local/bin is absent in $PATH, change the download location accordingly.
 
 ## Usage
 Start a review session: ``scripture <deck file>``
@@ -54,7 +54,7 @@ case $type in
 	card-complete) killall sxiv ;;
 esac
 ```
-```sh
+```
 /home/michael/deck.tsv
 --------------------------------------------------
 What does Bulgaria's flag look like?	img:/home/michael/bulgaria.png
