@@ -12,14 +12,16 @@ review_card () {
 	back=$(echo "$1" | cut -d"$DELIMITER" -f 2)
 
 	# Get grade (q) from user
-	read -r front </dev/tty
+	echo "$front"
+	read < /dev/tty
 	echo "$back"
 	echo
 
 	# Loop until user gives a valid answer
 	while :
 	do
-		read -r "Enter your grade (0-5): " q < /dev/tty
+		echo "Enter your grade (0-5):"
+		read -r q < /dev/tty
 		echo "$q" | grep "^[0-5]$" > /dev/null && break
 	done
 
@@ -108,6 +110,8 @@ cat "$1" > /dev/null 2>&1 || no_file=1
 
 # Deck file with missing fields
 i=1
+tmp_file=/tmp/scripture_missing_fields
+cp "$1" "$tmp_file"
 while read -r line
 do
 	# Check how many instances of $DELIMITER are in the line
@@ -135,13 +139,14 @@ do
 
 			default_line=$(echo "$line\$DELIMITER0\$DELIMITER2.5\$DELIMITER0\$DELIMITER$date" | sed "s/\$DELIMITER/$DELIMITER/g")
 
-			update_deck "$line" "$default_line" "$1"
+			update_deck "$line" "$default_line" "$tmp_file"
 
 			;;
 	esac
 
 	i=$(echo "$i + 1" | bc)
 done < "$1"
+mv "$tmp_file" "$1"
 
 # Delete temp files
 rm /tmp/scripture 2> /dev/null
