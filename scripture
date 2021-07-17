@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/sh
 
 # Function definitions first
 
@@ -12,14 +12,14 @@ review_card () {
 	back=$(echo "$1" | cut -d"$DELIMITER" -f 2)
 
 	# Get grade (q) from user
-	read -rp "$front" </dev/tty
+	read -r front </dev/tty
 	echo "$back"
 	echo
 
 	# Loop until user gives a valid answer
 	while :
 	do
-		read -rp "Enter your grade (0-5): " q < /dev/tty
+		read -r "Enter your grade (0-5): " q < /dev/tty
 		echo "$q" | grep "^[0-5]$" > /dev/null && break
 	done
 
@@ -59,7 +59,7 @@ compute_sm2 () {
 			esac
 
 			EF=$(echo "$EF + (0.1 - (5 - $q) * (0.08 + (5 - $q) * 0.02))" | bc -l)
-			[ "$(echo "$EF < 1.3" | bc -l)" == 1 ] && EF=1.3
+			[ "$(echo "$EF < 1.3" | bc -l)" = 1 ] && EF=1.3
 
 			# Increment n
 			n=$(echo "n + 1" | bc -l)
@@ -103,7 +103,7 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 [ -z "$1" ] && echo "Usage: scripture <deck file>" && exit 1
 
 # Non-existent deck file
-cat "$1" &> /dev/null || no_file=1
+cat "$1" > /dev/null 2>&1 || no_file=1
 [ "$no_file" ] && echo "No such deck file: $1" && exit 1
 
 # Deck file with missing fields
@@ -172,8 +172,8 @@ do
 done < "$1"
 
 # Exit if no cards to review
-cat /tmp/scripture &> /dev/null || none=1
-[ "$none" ] && echo "No cards to review. Next: $(date -d "@$(cat /tmp/scripture_upcoming | sort | head -1)" -I)" && exit
+cat /tmp/scripture > /dev/null 2>&1 || none=1
+[ "$none" ] && echo "No cards to review. Next: $(date -d "@$(sort < /tmp/scripture_upcoming | head -1)" -I)" && exit
 
 # Otherwise, start main loop
 while :
@@ -201,7 +201,7 @@ do
 	done < /tmp/scripture
 
 	# Exit if none
-	cat /tmp/scripture_lt4 &> /dev/null || exit
+	cat /tmp/scripture_lt4 > /dev/null 2>&1 || exit
 
 	# If there are still pending cards, we need to restart
 	mv /tmp/scripture_lt4 /tmp/scripture
