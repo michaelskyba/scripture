@@ -27,3 +27,36 @@ In each review session, ``scripture`` will show you the "front" of your card and
 - 5: Correct response with perfect recall.
 
 See https://en.wikipedia.org/wiki/SuperMemo for more information.
+
+### Extending
+(Besides modifying the source code, which isn't onerous) ``scripture`` can be extended through $SCRIPTURE_HOOK, which functions in a similar fashion to Kiss's $KISS_HOOK. It will be called using the equivalent of ``$SCRIPTURE_HOOK type front_of_card back_of_card``. The "types" are as follows:
+- "front-show" - called just after the front of a card has been shown to the user
+- "back-show" - called just after the back of a card has been shown to the user
+- "card-complete" - called just after the user has given themselves a grade
+
+Here's an example, demonstrating how you could create cards that spawn images.
+```sh
+/etc/zshenv
+--------------------------------------------------
+export SCRIPTURE_HOOK=/home/michael/s_images
+```
+```sh
+/home/michael/s_images
+--------------------------------------------------
+#!/bin/sh
+
+type=$1
+# (front isn't used for this hook)
+back=$3
+
+case $type in
+	back-show) [ "${back%%:*}" = img ] && sxiv "${back#img:}" ;;
+	card-complete) killall sxiv ;;
+esac
+```
+```sh
+/home/michael/deck.tsv
+--------------------------------------------------
+What does Bulgaria's flag look like?	img:/home/michael/bulgaria.png
+What does Canada's flag look like?	img:/home/michael/canada.png
+```
