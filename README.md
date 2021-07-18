@@ -25,6 +25,8 @@ See https://en.wikipedia.org/wiki/SuperMemo for more information.
 - "back-show" - called just after the back of a card has been shown to the user
 - "card-complete" - called just after the user has given themselves a grade
 
+Alternatively, put a "hook" file in the directory you're calling scripturre from.
+
 Here's an example, demonstrating how you could create cards that spawn images.
 ```sh
 /etc/zshenv
