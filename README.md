@@ -20,14 +20,20 @@ In each review session, ``scripture`` will show you the "front" of your card and
 See https://en.wikipedia.org/wiki/SuperMemo for more information.
 
 ### Extending
-(Besides modifying the source code, which isn't onerous) ``scripture`` can be extended through $SCRIPTURE_HOOK, which functions in a similar fashion to Kiss's $KISS_HOOK. It will be called using the equivalent of ``$SCRIPTURE_HOOK type front_of_card back_of_card``. The "types" are as follows:
-- "front-show" - called just after the front of a card has been shown to the user
-- "back-show" - called just after the back of a card has been shown to the user
-- "card-complete" - called just after the user has given themselves a grade
+(Besides modifying the source code, which isn't onerous) ``scripture`` can be extended through $SCRIPTURE_HOOK, which functions in a similar fashion to Kiss's $KISS_HOOK. Alternatively, put a "hook" file in the directory you're calling scripturre from. Your script will be passed several arguments, the first being the type of hook, and the rest depending on which type you get.
 
-Alternatively, put a "hook" file in the directory you're calling scripturre from.
+| hook type | arguments |
+| ---- | --------- |
+| review_start | hook_type deck_file |
+| front_show | hook_type front_of_card back_of_card |
+| back_show | hook_type front_of_card back_of_card |
+| card_complete | hook_type front_of_card back_of_card |
+| pre_iteration | hook_type review_file |
+| review_complete   | hook_type deck_file |
 
-Here's an example, demonstrating how you could create cards that spawn images.
+Hooks aren't called with "&" at the end. See the example below for how to work around it, in the case that it may seem necessary.
+
+Here's an example, demonstrating how you could create cards that spawn images. Note that your hook script can be written in any language, the only requirement being that it's executable.
 ```sh
 /etc/zshenv
 --------------------------------------------------
@@ -41,10 +47,11 @@ export SCRIPTURE_HOOK=/home/michael/s_images
 type=$1
 # (front isn't used for this hook)
 back=$3
+# $3 won't always exist, but $back won't be called unless it is
 
 case $type in
-	back-show) [ "${back%%:*}" = img ] && sxiv "${back#img:}" ;;
-	card-complete) killall sxiv ;;
+	back_show) [ "${back%%:*}" = img ] && sxiv "${back#img:}" & ;;
+	card_complete) killall sxiv ;;
 esac
 ```
 ```
