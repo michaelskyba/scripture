@@ -2,6 +2,13 @@
 
 # Function definitions first
 
+# Debugging
+rm "$SCRIPTURE_DEBUG" > /dev/null 2>&1
+slog () {
+	# input: $1 - message
+	[ "$SCRIPTURE_DEBUG" ] && echo "$(date +%s)	$1" >> "$SCRIPTURE_DEBUG" && read < /dev/tty
+}
+
 # Delegate reviewing (getting the grade)
 review_card () {
 	# input: $1 - card to review
@@ -37,9 +44,15 @@ compute_sm2 () {
 	# input: $1 - card, $2 - grade
 	# output: new card
 
+	slog "card: $1"
+	slog "grade: $2"
+
 	# Get the Front and Back of your card
 	front=$(echo "$1" | cut -d"$DELIMITER" -f 1)
 	back=$(echo "$1" | cut -d"$DELIMITER" -f 2)
+
+	slog "front: $front"
+	slog "back: $back"
 
 	# Grade alias as per wikipedia
 	q="$2"
@@ -51,35 +64,50 @@ compute_sm2 () {
 	# I - interval
 	I=$(echo "$1" | cut -d"$DELIMITER" -f 5)
 
+	slog "n: $n"
+	slog "EF: $EF"
+	slog "I: $I"
+
 	# Split depending on q >= 3 or not
 	correct_response=0
 	[ "$q" -ge 3 ] && correct_response=1
 	case $correct_response in
 		1)
+			slog "correct response"
+
 			# Correct response
 			case "$n" in
-				0) I=1 ;;
-				1) I=6 ;;
-				*) I=$(echo "$I * $EF" | bc -l) ;;
+				0) I=1 && slog "set I to 1" ;;
+				1) I=6 && slog "set I to 6" ;;
+				*) slog "set I to $(echo "$I * $EF" | bc -l), aka $I * $EF" && I=$(echo "$I * $EF" | bc -l) ;;
 			esac
 
+			slog "set EF to $EF + (0.1 - (5 - $q) * (0.08 + (5 - $q) * 0.02))"
 			EF=$(echo "$EF + (0.1 - (5 - $q) * (0.08 + (5 - $q) * 0.02))" | bc -l)
-			[ "$(echo "$EF < 1.3" | bc -l)" = 1 ] && EF=1.3
+			slog "which is $EF"
+			[ "$(echo "$EF < 1.3" | bc -l)" = 1 ] && EF=1.3 && slog "less than 1.3, so we set to $EF"
 
 			# Increment n
-			n=$(echo "n + 1" | bc -l)
+			n=$((n+1))
+			slog "increment n: set to $n"
 
 			;;
 		0)
+			slog "incorrect response"
+
 			# Incorrect response
 			n=0
 			I=1
+
+			slog "set n to $n"
+			slog "set I to $I"
 
 			;;
 	esac
 
 	# Create new line
 	echo "$front$DELIMITER$back$DELIMITER$n$DELIMITER$EF$DELIMITER$I$DELIMITER$(date -I)"
+	slog "new line: $front$DELIMITER$back$DELIMITER$n$DELIMITER$EF$DELIMITER$I$DELIMITER$(date -I)"
 }
 
 update_deck () {
