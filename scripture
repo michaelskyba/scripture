@@ -6,7 +6,7 @@
 rm "$SCRIPTURE_DEBUG" > /dev/null 2>&1
 slog () {
 	# input: $1 - message
-	[ "$SCRIPTURE_DEBUG" ] && echo "$(date +%s)	$1" >> "$SCRIPTURE_DEBUG" && read < /dev/tty
+	echo "$(date +%s)	$1" >> "$SCRIPTURE_DEBUG"
 }
 
 # Delegate reviewing (getting the grade)
@@ -20,10 +20,13 @@ review_card () {
 
 	# Get grade (q) from user
 	echo "$front"
+
 	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "front-show" "$front" "$back" &
+
 	read < /dev/tty
 	echo "$back"
 	echo
+
 	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "back-show" "$front" "$back" &
 
 	# Loop until user gives a valid answer
@@ -33,6 +36,7 @@ review_card () {
 		read -r q < /dev/tty
 		echo "$q" | grep "^[0-5]$" > /dev/null && break
 	done
+
 	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "card-complete" "$front" "$back" &
 
 	# Function output
@@ -44,15 +48,15 @@ compute_sm2 () {
 	# input: $1 - card, $2 - grade
 	# output: new card
 
-	slog "card: $1"
-	slog "grade: $2"
+	[ "$SCRIPTURE_DEBUG" ] && slog "card: $1"
+	[ "$SCRIPTURE_DEBUG" ] && slog "grade: $2"
 
 	# Get the Front and Back of your card
 	front=$(echo "$1" | cut -d"$DELIMITER" -f 1)
 	back=$(echo "$1" | cut -d"$DELIMITER" -f 2)
 
-	slog "front: $front"
-	slog "back: $back"
+	[ "$SCRIPTURE_DEBUG" ] && slog "front: $front"
+	[ "$SCRIPTURE_DEBUG" ] && slog "back: $back"
 
 	# Grade alias as per wikipedia
 	q="$2"
@@ -64,50 +68,67 @@ compute_sm2 () {
 	# I - interval
 	I=$(echo "$1" | cut -d"$DELIMITER" -f 5)
 
-	slog "n: $n"
-	slog "EF: $EF"
-	slog "I: $I"
+	[ "$SCRIPTURE_DEBUG" ] && slog "n: $n"
+	[ "$SCRIPTURE_DEBUG" ] && slog "EF: $EF"
+	[ "$SCRIPTURE_DEBUG" ] && slog "I: $I"
 
 	# Split depending on q >= 3 or not
 	correct_response=0
 	[ "$q" -ge 3 ] && correct_response=1
 	case $correct_response in
 		1)
-			slog "correct response"
+			[ "$SCRIPTURE_DEBUG" ] && slog "correct response"
 
 			# Correct response
 			case "$n" in
-				0) I=1 && slog "set I to 1" ;;
-				1) I=6 && slog "set I to 6" ;;
-				*) slog "set I to $(echo "$I * $EF" | bc -l), aka $I * $EF" && I=$(echo "$I * $EF" | bc -l) ;;
+				0)
+					I=1
+					[ "$SCRIPTURE_DEBUG" ] && slog "set I to 1"
+					
+					;;
+				1)
+					I=6
+					[ "$SCRIPTURE_DEBUG" ] && slog "set I to 6"
+					
+					;;
+				*)
+					[ "$SCRIPTURE_DEBUG" ] && slog "set I to $(echo "$I * $EF" | bc -l), aka $I * $EF"
+					I=$(echo "$I * $EF" | bc -l)
+
+					;;
 			esac
 
-			slog "set EF to $EF + (0.1 - (5 - $q) * (0.08 + (5 - $q) * 0.02))"
+			[ "$SCRIPTURE_DEBUG" ] && slog "set EF to $EF + (0.1 - (5 - $q) * (0.08 + (5 - $q) * 0.02))"
 			EF=$(echo "$EF + (0.1 - (5 - $q) * (0.08 + (5 - $q) * 0.02))" | bc -l)
-			slog "which is $EF"
-			[ "$(echo "$EF < 1.3" | bc -l)" = 1 ] && EF=1.3 && slog "less than 1.3, so we set to $EF"
+			[ "$SCRIPTURE_DEBUG" ] && slog "which is $EF"
+
+			if [ "$(echo "$EF < 1.3" | bc -l)" = 1 ]
+			then
+				EF=1.3
+				[ "$SCRIPTURE_DEBUG" ] && slog "less than 1.3, so we set to $EF"
+			fi
 
 			# Increment n
 			n=$((n+1))
-			slog "increment n: set to $n"
+			[ "$SCRIPTURE_DEBUG" ] && slog "increment n: set to $n"
 
 			;;
 		0)
-			slog "incorrect response"
+			[ "$SCRIPTURE_DEBUG" ] && slog "incorrect response"
 
 			# Incorrect response
 			n=0
 			I=1
 
-			slog "set n to $n"
-			slog "set I to $I"
+			[ "$SCRIPTURE_DEBUG" ] && slog "set n to $n"
+			[ "$SCRIPTURE_DEBUG" ] && slog "set I to $I"
 
 			;;
 	esac
 
 	# Create new line
 	echo "$front$DELIMITER$back$DELIMITER$n$DELIMITER$EF$DELIMITER$I$DELIMITER$(date -I)"
-	slog "new line: $front$DELIMITER$back$DELIMITER$n$DELIMITER$EF$DELIMITER$I$DELIMITER$(date -I)"
+	[ "$SCRIPTURE_DEBUG" ] && slog "new line: $front$DELIMITER$back$DELIMITER$n$DELIMITER$EF$DELIMITER$I$DELIMITER$(date -I)"
 }
 
 update_deck () {
