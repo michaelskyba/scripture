@@ -177,6 +177,7 @@ do
 	# Decide what we will do with this number, if there is something to do
 	type="invalid"
 	[ "$splits" = 5 ] && continue
+	[ "$splits" = 0 ] && continue
 	[ "$splits" = 1 ] && type="new_card"
 
 	# Commit
@@ -213,6 +214,9 @@ rm /tmp/scripture_upcoming 2> /dev/null
 # Determine which cards need to be reviewed
 while read -r line
 do
+	# Skip comments
+	[ "$(echo "$line" | sed "s/[^$DELIMITER]//g" | awk '{ print length }')" = 0 ] && continue
+
 	# Get epoch time of last review
 	output=$(echo "$line" | cut -d"$DELIMITER" -f 6)
 	output=$(date +%s -d"$output")
