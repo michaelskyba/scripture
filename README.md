@@ -20,7 +20,7 @@ In each review session, ``scripture`` will show you the "front" of your card and
 See https://en.wikipedia.org/wiki/SuperMemo for more information.
 
 ### Extending
-(Besides modifying the source code, which isn't onerous) ``scripture`` can be extended through $SCRIPTURE_HOOK, which functions in a similar fashion to Kiss's $KISS_HOOK. Alternatively, put a "hook" file in the directory you're calling scripturre from. Your script will be passed several arguments, the first being the type of hook, and the rest depending on which type you get.
+(Besides modifying the source code, which is not onerous) ``scripture`` can be extended through $SCRIPTURE_HOOK, which functions in a similar fashion to Kiss's $KISS_HOOK. Alternatively, put a "hook" file in the directory you're calling ``scripture`` from. Your script will be passed several arguments, the first being the type of hook, and the rest depending on which type you get.
 
 | hook type | arguments |
 | ---- | --------- |
@@ -31,9 +31,9 @@ See https://en.wikipedia.org/wiki/SuperMemo for more information.
 | pre_iteration | hook_type review_file |
 | review_complete   | hook_type deck_file |
 
-Hooks aren't called with "&" at the end. See the example below for how to work around it, in the case that it may seem necessary.
+Hooks are not called with "&" at the end. See the example below for how to work around it, in the case that it may seem necessary.
 
-Here's an example, demonstrating how you could create cards that spawn images. Note that your hook script can be written in any language, the only requirement being that it's executable.
+Here is an example, demonstrating how you could create cards that spawn images. Note that your hook script can be written in any language, the only requirement being that it is executable.
 ```sh
 /etc/zshenv
 --------------------------------------------------
@@ -45,9 +45,9 @@ export SCRIPTURE_HOOK=/home/michael/s_images
 #!/bin/sh
 
 type=$1
-# (front isn't used for this hook)
+# (front is not used for this hook)
 back=$3
-# $3 won't always exist, but $back won't be called unless it is
+# $3 will not always exist, but $back will not be called unless it does
 
 case $type in
 	back_show) [ "${back%%:*}" = img ] && sxiv "${back#img:}" & ;;
