@@ -63,5 +63,11 @@ What does Bulgaria's flag look like?	img:/home/michael/bulgaria.png
 What does Canada's flag look like?	img:/home/michael/canada.png
 ```
 
+## Similar Projects
+- https://apps.ankiweb.net/
+- https://github.com/proycon/vocage
+- https://mnemosyne-proj.org/
+- https://gitlab.com/phillord/org-drill/
+
 ## Bugs
 Open an issue on GitHub (or email me) if you find a bug. Also open an issue if you need a bit of clarification on anything. I would be happy to provide assistance.
