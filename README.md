@@ -6,7 +6,7 @@ Start a review session: ``scripture <deck file>``
 
 A deck file is simply a TSV, with the columns (Front, Back, n, EF, I, last review). See ``sample_deck.tsv`` for an example. Note that **you should only provide the first two columns when creating cards**. The rest is data used by SM-2 , and will be generated automatically by scripture. Do not try to fill them with arbitrary numbers.
 
-Lines with exactly zero instances of the delimiter, will be ignored, which allows line breaks and comments.
+Lines with exactly zero instances of the delimiter will be ignored, which allows line breaks and comments.
 
 The delimiter can be changed via the $SCRIPTURE_DELIMITER environment variable. For example, use ``export SCRIPTURE_DELIMITER=","`` if you prefer CSV over TSV. The delimiter **must only be one character in length**.
 
@@ -22,7 +22,7 @@ In each review session, ``scripture`` will show you the "front" of your card and
 See https://en.wikipedia.org/wiki/SuperMemo for more information.
 
 ### Extending
-(Besides modifying the source code, which is not onerous) ``scripture`` can be extended through $SCRIPTURE_HOOK, which functions in a similar fashion to Kiss's $KISS_HOOK. Alternatively, put a "hook" file in the directory you're calling ``scripture`` from. Your script will be passed several arguments, the first being the type of hook, and the rest depending on which type you get.
+(Besides modifying the source code, which is not onerous) ``scripture`` can be extended through $SCRIPTURE_HOOK, which functions in a similar fashion to KISS Linux's $KISS_HOOK. Alternatively, put a "hook" file in the directory you're calling ``scripture`` from. Your script will be passed several arguments, the first being the type of hook, and the rest depending on which type you get.
 
 | hook type | arguments |
 | ---- | --------- |
