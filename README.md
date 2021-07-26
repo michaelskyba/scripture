@@ -29,7 +29,7 @@ See https://en.wikipedia.org/wiki/SuperMemo for more information.
 | review_start | hook_type deck_file |
 | front_show | hook_type front_of_card back_of_card |
 | back_show | hook_type front_of_card back_of_card |
-| card_complete | hook_type front_of_card back_of_card |
+| card_complete | hook_type front_of_card back_of_card grade |
 | pre_iteration | hook_type review_file |
 | review_complete   | hook_type deck_file |
 

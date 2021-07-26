@@ -37,7 +37,7 @@ review_card () {
 		echo "$q" | grep "^[0-5]$" > /dev/null && break
 	done
 
-	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "card_complete" "$front" "$back" &
+	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "card_complete" "$front" "$back" "$q" &
 
 	# Function output
 	return "$q"
