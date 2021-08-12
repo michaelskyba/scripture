@@ -2,6 +2,11 @@
 
 # Function definitions first
 
+# Reduce verbosity of hook calls
+scripture_hook () {
+	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "$@"
+}
+
 # Delegate reviewing (getting the grade)
 review_card () {
 	# input: $1 - card to review
@@ -14,13 +19,13 @@ review_card () {
 	# Get grade (q) from user
 	echo "$front"
 
-	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "front_show" "$front" "$back"
+	scripture_hook "front_show" "$front" "$back"
 
 	read < /dev/tty
 	echo "$back"
 	echo
 
-	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "back_show" "$front" "$back"
+	scripture_hook "back_show" "$front" "$back"
 
 	# Loop until user gives a valid answer
 	while :
@@ -30,7 +35,7 @@ review_card () {
 		echo "$q" | grep -q "^[0-5]$" && break
 	done
 
-	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "card_complete" "$front" "$back" "$q"
+	scripture_hook "card_complete" "$front" "$back" "$q"
 
 	# Function output
 	return "$q"
@@ -119,7 +124,7 @@ cat "$1" > /dev/null 2>&1 || no_file=1
 # Use "hook" file if it exists
 [ -z "$SCRIPTURE_HOOK" ] && cat hook > /dev/null 2>&1 && SCRIPTURE_HOOK=./hook
 
-[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "review_start" "$1"
+scripture_hook "review_start" "$1"
 
 # Deck file with missing fields
 i=1
@@ -200,7 +205,7 @@ cat /tmp/scripture > /dev/null 2>&1 || none=1
 # Otherwise, start main loop
 while :
 do
-	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "pre_iteration" "/tmp/scripture"
+	scripture_hook "pre_iteration" "/tmp/scripture"
 
 	while read -r line
 	do
@@ -226,12 +231,7 @@ do
 
 	# Exit if none
 	cat /tmp/scripture_lt4 > /dev/null 2>&1 || done=1
-	if [ "$done" ]
-	then
-		[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "review_complete" "$1"
-
-		exit
-	fi
+	[ "$done" ] && scripture_hook "review_complete" "$1" && exit
 
 	# If there are still pending cards, we need to restart
 	mv /tmp/scripture_lt4 /tmp/scripture
