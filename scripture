@@ -27,7 +27,7 @@ review_card () {
 	do
 		echo "Enter your grade (0-5):"
 		read -r q < /dev/tty
-		echo "$q" | grep "^[0-5]$" > /dev/null && break
+		echo "$q" | grep -q "^[0-5]$" && break
 	done
 
 	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "card_complete" "$front" "$back" "$q"
