@@ -118,11 +118,11 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 [ -z "$1" ] && echo "Usage: scripture <deck file>" && exit 1
 
 # Non-existent deck file
-cat "$1" > /dev/null 2>&1 || no_file=1
+[ -f "$1" ] || no_file=1
 [ "$no_file" ] && echo "No such deck file: $1" && exit 1
 
 # Use "hook" file if it exists
-[ -z "$SCRIPTURE_HOOK" ] && cat hook > /dev/null 2>&1 && SCRIPTURE_HOOK=./hook
+[ -z "$SCRIPTURE_HOOK" ] && [ -f hook ] && SCRIPTURE_HOOK=./hook
 
 scripture_hook "review_start" "$1"
 
@@ -199,7 +199,7 @@ do
 done < "$1"
 
 # Exit if no cards to review
-cat /tmp/scripture > /dev/null 2>&1 || none=1
+[ -f /tmp/scripture ] || none=1
 [ "$none" ] && echo "No cards to review. Next: $(date -d "@$(sort < /tmp/scripture_upcoming | head -1)" -I)" && exit
 
 # Otherwise, start main loop
@@ -230,7 +230,7 @@ do
 	done < /tmp/scripture
 
 	# Exit if none
-	cat /tmp/scripture_lt4 > /dev/null 2>&1 || done=1
+	[ -f /tmp/scripture_lt4 ] || done=1
 	[ "$done" ] && scripture_hook "review_complete" "$1" && exit
 
 	# If there are still pending cards, we need to restart
