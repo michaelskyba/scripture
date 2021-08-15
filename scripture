@@ -163,7 +163,7 @@ do
 			;;
 	esac
 
-	i=$(echo "$i + 1" | bc)
+	i=$((i+1))
 done < "$1"
 mv "$tmp_file" "$1"
 
