@@ -3,6 +3,7 @@
 
 ## Dependencies
 - BusyBox date
+- bc
 
 ## Usage
 Start a review session: ``scripture <deck file>``
