@@ -2,8 +2,9 @@
 ``scripture``: a simple SM-2 implementation
 
 ## Dependencies
-- bc that support comparisons
+- GNU bc
 - BusyBox date
+(sorry)
 
 ## Usage
 Start a review session: ``scripture <deck file>``
