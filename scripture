@@ -7,6 +7,22 @@ scripture_hook () {
 	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "$@"
 }
 
+# POSIX bc workaround
+greater_than () {
+	# return 0 = no error
+	# return 1 = error
+
+	# is $1 > $2 ?
+
+	# https://unix.stackexchange.com/a/558546
+	comp=$(printf 'if(%s > %s){a=1};a\n' "$1" "$2" | bc -s)
+
+	# bc returns 0 for no, 1 for yes
+	# so we return the opposite
+
+	[ "$comp" = 1 ] && return 0 || return 1
+}
+
 # Delegate reviewing (getting the grade)
 review_card () {
 	# input: $1 - card to review
@@ -73,8 +89,7 @@ compute_sm2 () {
 			esac
 
 			EF=$(echo "$EF + (0.1 - (5 - $q) * (0.08 + (5 - $q) * 0.02))" | bc -l)
-
-			[ "$(echo "$EF < 1.3" | bc -l)" = 1 ] && EF=1.3
+			greater_than 1.3 "$EF" && EF=1.3
 
 			# Increment n
 			n=$((n+1))
@@ -182,8 +197,6 @@ do
 	output=$(echo "$line" | cut -d"$DELIMITER" -f 6)
 	output=$(date +%s -d"$output")
 
-	echo now
-
 	# See if time since last review outlasts inter_repetition_interval (I)
 	# 86400 --> num of seconds in 24 hours
 	I=$(echo "$line" | cut -d"$DELIMITER" -f 5)
@@ -191,7 +204,7 @@ do
 
 	# Does time since last review fulfills I's requirement
 	I_thres=$(echo "$I * 86400" | bc -l)
-	[ "$(echo "$time_since > $I_thres" | bc -l)" = "1" ] && echo "$line" >> /tmp/scripture
+	greater_than "$time_since" "$I_thres" && echo "$line" >> /tmp/scripture
 
 	# Add review date to /tmp/scripture_upcoming, for telling the user
 	# the next time to review, if they have no reviews currently
