@@ -4,6 +4,7 @@
 
 # Reduce verbosity of hook calls
 scripture_hook () {
+	rm -f /tmp/scripture_hide
 	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "$@"
 }
 
@@ -33,15 +34,14 @@ review_card () {
 	back=$(echo "$1" | cut -d"$DELIMITER" -f 2)
 
 	# Get grade (q) from user
-	echo "$front"
-
 	scripture_hook "front_show" "$front" "$back"
+	[ -f /tmp/scripture_hide ] || echo "$front"
 
 	read < /dev/tty
-	echo "$back"
-	echo
 
 	scripture_hook "back_show" "$front" "$back"
+	[ -f /tmp/scripture_hide ] || echo "$back"
+	echo
 
 	# Loop until user gives a valid answer
 	while :
