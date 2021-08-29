@@ -67,6 +67,13 @@ What does Bulgaria's flag look like?	img:/home/michael/bulgaria.png
 What does Canada's flag look like?	img:/home/michael/canada.png
 ```
 
+#### scripture_hide
+Both the front_show and back_show hooks are called before their actions.
+In these hooks, you can create ``/tmp/scripture_hide`` to tell scripture not
+to show the respective side of the card. See
+[my current personal hook](https://gist.github.com/michaelskyba/8d4d68387a5ecd6bdce1ed5bf7a61939)
+for an example of how this can be useful.
+
 ## Similar Projects
 - https://apps.ankiweb.net/
 - https://github.com/proycon/vocage
