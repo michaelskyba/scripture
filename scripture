@@ -43,7 +43,7 @@ review_card () {
 	scripture_hook "front_show" "$front" "$back"
 	[ -f /tmp/scripture_hide ] || echo "$front"
 
-	read < /dev/tty
+	read -r < /dev/tty
 
 	scripture_hook "back_show" "$front" "$back"
 	[ -f /tmp/scripture_hide ] || echo "$back"
