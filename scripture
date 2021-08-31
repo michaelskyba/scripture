@@ -4,6 +4,12 @@
 
 # Reduce verbosity of hook calls
 scripture_hook () {
+	# We can't use mktemp for scripture_hide because the user
+	# won't know what the filename is
+
+	# Giving them the filename as a hook argument is messy, IMO
+	# Harcoding scripture_hide is better
+
 	rm -f /tmp/scripture_hide
 	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "$@"
 }
@@ -144,8 +150,8 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 scripture_hook "review_start" "$1"
 
 # Deck file with missing fields
-tmp_file=/tmp/scripture_missing_fields
-cp "$1" "$tmp_file"
+tmp_missing_fields=$(mktemp)
+cp "$1" "$tmp_missing_fields"
 while read -r line
 do
 	# Check how many instances of $DELIMITER are in the line
@@ -174,17 +180,17 @@ do
 
 			default_line=$(echo "$line\$DELIMITER0\$DELIMITER2.5\$DELIMITER0\$DELIMITER$date" | sed "s/\$DELIMITER/$DELIMITER/g")
 
-			update_deck "$line" "$default_line" "$tmp_file"
+			update_deck "$line" "$default_line" "$tmp_missing_fields"
 
 			;;
 	esac
 done < "$1"
-mv "$tmp_file" "$1"
+mv "$tmp_missing_fields" "$1"
 
 # Delete temp files
-rm -f /tmp/scripture
-rm -f /tmp/scripture_lt4
-rm -f /tmp/scripture_upcoming
+tmp_to_review=$(mktemp -u)
+tmp_less_than_four=$(mktemp -u)
+tmp_upcoming_date=$(mktemp)
 
 # Determine which cards need to be reviewed
 while read -r line
@@ -203,23 +209,23 @@ do
 
 	# Does time since last review fulfills I's requirement
 	I_thres=$(echo "$I * 86400" | bc -l)
-	greater_than "$time_since" "$I_thres" && echo "$line" >> /tmp/scripture
+	greater_than "$time_since" "$I_thres" && echo "$line" >> "$tmp_to_review"
 
-	# Add review date to /tmp/scripture_upcoming, for telling the user
+	# Add review date to temporary file, for telling the user
 	# the next time to review, if they have no reviews currently
 	next_date=$(echo "$output + $I_thres" | bc -l)
 	next_date=${next_date%%.*}
-	echo "$next_date" >> /tmp/scripture_upcoming
+	echo "$next_date" >> "$tmp_upcoming_date"
 done < "$1"
 
 # Exit if no cards to review
-[ -f /tmp/scripture ] || none=1
-[ "$none" ] && echo "No cards to review. Next: $(date -d "@$(sort < /tmp/scripture_upcoming | head -1)" -I)" && exit
+[ -f "$tmp_to_review" ] || none=1
+[ "$none" ] && echo "No cards to review. Next: $(date -d "@$(sort < "$tmp_upcoming_date" | head -1)" -I)" && exit
 
 # Otherwise, start main loop
 while :
 do
-	scripture_hook "pre_iteration" "/tmp/scripture"
+	scripture_hook "pre_iteration" "$tmp_to_review"
 
 	while read -r line
 	do
@@ -239,14 +245,14 @@ do
 		# So, we need to create a list of these re-review cards
 
 		# If the grade is less than four, add the card to the list
-		[ "$grade" -lt 4 ] && echo "$new_line_raw" >> /tmp/scripture_lt4
+		[ "$grade" -lt 4 ] && echo "$new_line_raw" >> "$tmp_less_than_four"
 
-	done < /tmp/scripture
+	done < "$tmp_to_review"
 
 	# Exit if none
-	[ -f /tmp/scripture_lt4 ] || done=1
+	[ -f "$tmp_less_than_four" ] || done=1
 	[ "$done" ] && scripture_hook "review_complete" "$1" && exit
 
 	# If there are still pending cards, we need to restart
-	mv /tmp/scripture_lt4 /tmp/scripture
+	mv "$tmp_less_than_four" "$tmp_to_review"
 done
