@@ -1,10 +1,6 @@
 # Scripture
 ``scripture``: a simple SM-2 implementation
 
-## Dependencies
-- BusyBox date
-- bc
-
 ## Usage
 Start a review session: ``scripture <deck file>``
 

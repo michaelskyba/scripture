@@ -200,7 +200,7 @@ do
 
 	# Get epoch time of last review
 	output=$(echo "$line" | cut -d "$DELIMITER" -f 6)
-	output=$(date +%s -d "$output")
+	output=$(date -d "$output" +%s)
 
 	# See if time since last review outlasts inter_repetition_interval (I)
 	# 86400 --> num of seconds in 24 hours
