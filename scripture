@@ -149,6 +149,9 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
 scripture_hook "review_start" "$1"
 
+# Remove trailing spaces (https://github.com/michaelskyba/scripture/issues/1)
+sed -i "s/ \+\$//g" "$1"
+
 # Deck file with missing fields
 tmp_missing_fields=$(mktemp)
 cp "$1" "$tmp_missing_fields"
