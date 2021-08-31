@@ -144,7 +144,6 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 scripture_hook "review_start" "$1"
 
 # Deck file with missing fields
-i=1
 tmp_file=/tmp/scripture_missing_fields
 cp "$1" "$tmp_file"
 while read -r line
@@ -161,7 +160,7 @@ do
 	# Commit
 	case "$type" in
 		"invalid")
-			echo "Line $i is invalid."
+			echo "Invalid line: $line"
 			echo "Provide exactly two columns (front and back) for new cards that you make."
 			echo "See the README for more information."
 
@@ -179,8 +178,6 @@ do
 
 			;;
 	esac
-
-	i=$((i+1))
 done < "$1"
 mv "$tmp_file" "$1"
 
