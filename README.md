@@ -70,6 +70,16 @@ to show the respective side of the card. See
 [my current personal hook](https://gist.github.com/michaelskyba/8d4d68387a5ecd6bdce1ed5bf7a61939)
 for an example of how this can be useful.
 
+## macOS and BSD
+``scripture`` requires GNU/BusyBox sed and GNU/BusyBox date. I will provide instructions for getting those on macOS.
+If you're on BSD and want to use scripture, adapt these steps accordingly.
+
+1. Install [Homebrew](https://brew.sh/)
+2. ``brew install coreutils``
+3. ``brew install gnu-sed``
+4. In the ``scripture`` script, replace all uses of the ``date`` _command_ with "gdate",
+and replace all uses of the ``sed`` command with "gsed".
+
 ## Similar Projects
 - https://apps.ankiweb.net/
 - https://github.com/proycon/vocage
