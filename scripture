@@ -140,7 +140,9 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 # Usage sanitization
 
 # No deck file provided
-[ -z "$1" ] && echo "Usage: scripture <deck file>" && exit 1
+[ -z "$1" ] \
+	&& echo "Usage: scripture <deck file>" \
+	&& exit 1
 
 # Non-existent deck file
 [ -f "$1" ] || no_file=1
