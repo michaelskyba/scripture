@@ -152,8 +152,11 @@ scripture_hook "review_start" "$1"
 # Remove trailing spaces (https://github.com/michaelskyba/scripture/issues/1)
 sed -i "s/ \+\$//g" "$1"
 
+# Make sure main temporary file directory exists
+mkdir -p /tmp/scripture
+
 # Deck file with missing fields
-tmp_missing_fields=$(mktemp)
+tmp_missing_fields=$(mktemp -p /tmp/scripture)
 cp "$1" "$tmp_missing_fields"
 while read -r line
 do
@@ -191,9 +194,9 @@ done < "$1"
 mv "$tmp_missing_fields" "$1"
 
 # Create temp files
-tmp_to_review=$(mktemp -u)
-tmp_less_than_four=$(mktemp -u)
-tmp_upcoming_date=$(mktemp)
+tmp_to_review=$(mktemp -u -p /tmp/scripture)
+tmp_less_than_four=$(mktemp -u -p /tmp/scripture)
+tmp_upcoming_date=$(mktemp -p /tmp/scripture)
 
 # Determine which cards need to be reviewed
 while read -r line
