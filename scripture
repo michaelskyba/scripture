@@ -228,6 +228,11 @@ done < "$1"
 [ -f "$tmp_to_review" ] || none=1
 [ "$none" ] && echo "No cards to review. Next: $(date -d "@$(sort < "$tmp_upcoming_date" | head -1)" -I)" && exit
 
+# Backup of deck file in case of accidental stop during review
+tmp_deck_backup=/tmp/scripture/$(date -I)-$(date +%s)
+cp "$1" "$tmp_deck_backup"
+
+
 # Otherwise, start main loop
 while :
 do
@@ -257,7 +262,7 @@ do
 
 	# Exit if none
 	[ -f "$tmp_less_than_four" ] || done=1
-	[ "$done" ] && scripture_hook "review_complete" "$1" && exit
+	[ "$done" ] && scripture_hook "review_complete" "$1" && rm -f "$tmp_deck_backup" && exit
 
 	# If there are still pending cards, we need to restart
 	mv "$tmp_less_than_four" "$tmp_to_review"
