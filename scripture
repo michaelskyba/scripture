@@ -27,7 +27,9 @@ greater_than () {
 	# bc returns 0 for no, 1 for yes
 	# so we return the opposite
 
-	[ "$comp" = 1 ] && return 0 || return 1
+	[ "$comp" = 1 ] \
+		&& return 0 \
+		|| return 1
 }
 
 # Delegate reviewing (getting the grade)
@@ -142,10 +144,14 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 
 # Non-existent deck file
 [ -f "$1" ] || no_file=1
-[ "$no_file" ] && echo "No such deck file: $1" && exit 1
+[ "$no_file" ] \
+	&& echo "No such deck file: $1" \
+	&& exit 1
 
 # Use "hook" file if it exists
-[ -z "$SCRIPTURE_HOOK" ] && [ -f hook ] && SCRIPTURE_HOOK=./hook
+[ -z "$SCRIPTURE_HOOK" ] \
+	&& [ -f hook ] \
+	&& SCRIPTURE_HOOK=./hook
 
 scripture_hook "review_start" "$1"
 
@@ -226,7 +232,9 @@ done < "$1"
 
 # Exit if no cards to review
 [ -f "$tmp_to_review" ] || none=1
-[ "$none" ] && echo "No cards to review. Next: $(date -d "@$(sort < "$tmp_upcoming_date" | head -1)" -I)" && exit
+[ "$none" ] \
+	&& echo "No cards to review. Next: $(date -d "@$(sort < "$tmp_upcoming_date" | head -1)" -I)" \
+	&& exit
 
 # Backup of deck file in case of accidental stop during review
 tmp_deck_backup=/tmp/scripture/$(date -I)-$(date +%s)
@@ -261,7 +269,10 @@ do
 
 	# Exit if none
 	[ -f "$tmp_less_than_four" ] || done=1
-	[ "$done" ] && scripture_hook "review_complete" "$1" && rm -f "$tmp_deck_backup" && exit
+	[ "$done" ] \
+		&& scripture_hook "review_complete" "$1" \
+		&& rm -f "$tmp_deck_backup" \
+		&& exit
 
 	# If there are still pending cards, we need to restart
 	mv "$tmp_less_than_four" "$tmp_to_review"
