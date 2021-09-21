@@ -75,7 +75,7 @@ compute_sm2 () {
 	back=$(echo "$1" | cut -d "$DELIMITER" -f 2)
 
 	# Grade alias as per wikipedia
-	q="$2"
+	q=$2
 
 	# n - repetition number
 	n=$(echo "$1" | cut -d "$DELIMITER" -f 3)
@@ -153,7 +153,7 @@ DELIMITER=${SCRIPTURE_DELIMITER:-"	"}
 	&& [ -f hook ] \
 	&& SCRIPTURE_HOOK=./hook
 
-scripture_hook "review_start" "$1"
+scripture_hook review_start "$1"
 
 # Remove trailing spaces (https://github.com/michaelskyba/scripture/issues/1)
 sed -i "s/ \+\$//g" "$1"
@@ -170,14 +170,14 @@ do
 	splits=$(echo "$line" | sed "s/[^$DELIMITER]//g" | awk '{ print length }')
 
 	# Decide what we will do with this number, if there is something to do
-	type="invalid"
+	type=invalid
 	[ "$splits" = 5 ] && continue
 	[ "$splits" = 0 ] && continue
-	[ "$splits" = 1 ] && type="new_card"
+	[ "$splits" = 1 ] && type=new_card
 
 	# Commit
 	case "$type" in
-		"invalid")
+		invalid)
 			echo "Invalid line: $line"
 			echo "Provide exactly two columns (front and back) for new cards that you make."
 			echo "See the README for more information."
@@ -186,9 +186,9 @@ do
 
 			;;
 
-		"new_card")
+		new_card)
 			# arbitrary date that has to be in the past
-			date="2021-04-01"
+			date=2021-04-01
 
 			default_line=$(echo "$line\$DELIMITER0\$DELIMITER2.5\$DELIMITER0\$DELIMITER$date" | sed "s/\$DELIMITER/$DELIMITER/g")
 
@@ -243,7 +243,7 @@ cp "$1" "$tmp_deck_backup"
 # Start main loop
 while :
 do
-	scripture_hook "pre_iteration" "$tmp_to_review"
+	scripture_hook pre_iteration "$tmp_to_review"
 
 	while read -r line
 	do
@@ -270,7 +270,7 @@ do
 	# Exit if none
 	[ -f "$tmp_less_than_four" ] || done=1
 	[ "$done" ] \
-		&& scripture_hook "review_complete" "$1" \
+		&& scripture_hook review_complete "$1" \
 		&& rm -f "$tmp_deck_backup" \
 		&& exit
 
