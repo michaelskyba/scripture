@@ -232,8 +232,7 @@ done < "$1"
 tmp_deck_backup=/tmp/scripture/$(date -I)-$(date +%s)
 cp "$1" "$tmp_deck_backup"
 
-
-# Otherwise, start main loop
+# Start main loop
 while :
 do
 	scripture_hook "pre_iteration" "$tmp_to_review"
