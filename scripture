@@ -11,7 +11,7 @@ scripture_hook () {
 	# Harcoding scripture_hide is better
 
 	rm -f /tmp/scripture_hide
-	[ "$SCRIPTURE_HOOK" ] && $SCRIPTURE_HOOK "$@"
+	[ "$SCRIPTURE_HOOK" ] && "$SCRIPTURE_HOOK" "$@"
 }
 
 # POSIX bc workaround
@@ -87,7 +87,7 @@ compute_sm2 () {
 	# Split depending on q >= 3 or not
 	correct_response=0
 	[ "$q" -ge 3 ] && correct_response=1
-	case $correct_response in
+	case "$correct_response" in
 		1)
 			# Correct response
 			case "$n" in
