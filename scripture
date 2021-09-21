@@ -190,7 +190,7 @@ do
 done < "$1"
 mv "$tmp_missing_fields" "$1"
 
-# Delete temp files
+# Create temp files
 tmp_to_review=$(mktemp -u)
 tmp_less_than_four=$(mktemp -u)
 tmp_upcoming_date=$(mktemp)
