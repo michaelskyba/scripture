@@ -125,8 +125,8 @@ update_deck () {
 	# - Do NOT escape | anywhere!
 
 	# Escape lines
-	new_line_escaped="$(echo "$2" | sed -e 's/\\/\\\\/g' -e 's/[]$*.^[]/\\&/g' -e 's|/|\\/|g')"
-	old_line_escaped="$(echo "$1" | sed -e 's/\\/\\\\/g' -e 's/[]$*.^[]/\\&/g' -e 's|/|\\/|g')"
+	new_line_escaped="$(echo "$2" | sed -e 's/\\/\\\\/g' -e 's/&/\\&/g' -e 's/[]$*.^[]/\\&/g' -e 's|/|\\/|g')"
+	old_line_escaped="$(echo "$1" | sed -e 's/\\/\\\\/g' -e 's/&/\\&/g' -e 's/[]$*.^[]/\\&/g' -e 's|/|\\/|g')"
 
 	# Make the replacement
 	sed -i "s/^$old_line_escaped\$/$new_line_escaped/" "$3"
