@@ -70,6 +70,15 @@ to show the respective side of the card. See
 [my current personal hook](https://gist.github.com/michaelskyba/8d4d68387a5ecd6bdce1ed5bf7a61939)
 for an example of how this can be useful.
 
+### Restarting a review
+Before your review starts, scripture makes a copy of your deck in /tmp/scripture, deleting it
+once you successfully complete your review. The idea is that if something goes wrong, like you
+accidentally cancel a review while have cards you graded < 4, or mark a card wrong by accident,
+you can restore it effortlessly.
+
+The name of the file will be YYYY-MM-DD-Epoch, e.g. /tmp/scripture/2021-09-23-1632412533. Once you've
+found the file, overwrite your current deck file with it, and run scripture to start the review again.
+
 ## macOS and BSD
 ``scripture`` requires GNU/BusyBox sed and GNU/BusyBox date. I will provide instructions for getting those on macOS.
 If you're on BSD and want to use scripture, adapt these steps accordingly.
