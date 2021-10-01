@@ -96,4 +96,7 @@ and replace all uses of the ``sed`` command with "gsed".
 - https://gitlab.com/phillord/org-drill/
 
 ## Bugs
-Open an issue on GitHub (or email me) if you find a bug. Also open an issue if you need a bit of clarification on anything. I would be happy to provide assistance.
+Open an issue on GitHub if you find a bug. Also open an issue if you need a bit
+of clarification on anything. I would be happy to provide assistance. You can
+also email me, but I would prefer GitHub because that way, other people can see
+your issue and possibly benefit.
