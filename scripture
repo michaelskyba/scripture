@@ -54,7 +54,7 @@ review_card () {
 	# Loop until user gives a valid answer
 	while :
 	do
-		echo "Enter your grade (0-5):"
+		echo "Grade (0-5):"
 		read -r q < /dev/tty
 		echo "$q" | grep -q "^[0-5]$" && break
 	done
