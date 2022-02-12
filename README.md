@@ -92,6 +92,7 @@ and replace all uses of the ``sed`` command with "gsed".
 ## Similar Projects
 - https://apps.ankiweb.net/
 - https://github.com/proycon/vocage
+- https://github.com/0x766F6964/oboeru
 - https://mnemosyne-proj.org/
 - https://gitlab.com/phillord/org-drill/
 
