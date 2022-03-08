@@ -1,6 +1,23 @@
 # Scripture
 ``scripture``: a simple SM-2 implementation
 
+## Archive
+I made [tunnel](https://github.com/michaelskyba/tunnel), a new SM-2 implementation
+which is better than scripture in pretty much every way. Thus, I don't see any
+reason for anybody to use scripture anymore. If you are one of the zero people
+who is using scripture and agrees to switch to tunnel, be aware:
+- "tunnel" isn't interactive like scripture is and therefore requires a wrapper
+instead of using a hook system. If you liked the way scripture worked, you can
+use shovel, a provided example wrapper, which works similarly.
+- tunnel forces TSV for deck files and has no way of configuring the delimiter.
+If you are using/prefer e.g. CSV, include a conversion like ``sed "s/,/\t/g"``
+in your wrapper script.
+- tunnel uses Unix time for the last review date instead of YYYY-MM-DD. To use
+your existing decks with tunnel, you'll need to use a script that iterates
+over each line and converts each date.
+[Here](https://gist.github.com/michaelskyba/84d054b583d5a98780f4fea7ac67c216)
+is an example that prints to stdout.
+
 ## Usage
 Start a review session: ``scripture <deck file>``
 
