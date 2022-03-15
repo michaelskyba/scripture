@@ -12,9 +12,12 @@ use shovel, a provided example wrapper, which works similarly.
 - tunnel forces TSV for deck files and has no way of configuring the delimiter.
 If you are using/prefer e.g. CSV, include a conversion like ``sed "s/,/\t/g"``
 in your wrapper script.
-- tunnel uses Unix time for the last review date instead of YYYY-MM-DD. To use
-your existing decks with tunnel, you'll need to use a script that iterates
-over each line and converts each date.
+- tunnel uses Unix time for the last review date instead of YYYY-MM-DD.
+- tunnel doesn't allow decimals for inter-repetition intervals (fifth column).
+
+To use your existing decks with tunnel, you'll need to use a script that
+iterates over each line, converts each date to Unix time and converting each
+inter-repetition intervalue to an integer.
 [Here](https://gist.github.com/michaelskyba/84d054b583d5a98780f4fea7ac67c216)
 is an example that prints to stdout.
 
